@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pick a Box</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#140A2C;-webkit-tap-highlight-color:transparent}
+a{color:#E0306F}a:hover{color:#A81C50}
+input{font-family:inherit}
+@keyframes dcSpin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes dcBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4%)}}
+@keyframes dcShake{0%,100%{transform:rotate(0)}15%{transform:rotate(-7deg) scale(1.03)}35%{transform:rotate(6deg)}55%{transform:rotate(-5deg) scale(1.03)}75%{transform:rotate(3deg)}}
+@keyframes dcPulse{0%,100%{transform:translate(-50%,-50%) scale(1);box-shadow:0 0 0 0 rgba(224,48,111,.45),0 10px 24px rgba(224,48,111,.35)}50%{transform:translate(-50%,-50%) scale(1.04);box-shadow:0 0 0 14px rgba(224,48,111,0),0 14px 30px rgba(224,48,111,.4)}}
+@keyframes dcGlow{0%,100%{opacity:.85}50%{opacity:1}}
+@keyframes dcCaret{50%{opacity:0}}
+.x1:focus{border-color:#E0306F !important;background:#fff !important}
+.x2:hover{background:#E0306F !important;color:#fff !important}
+.x3:hover{background:#f1f3f7 !important;color:#22123F !important}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+</head>
+<body>
+<div id="root"></div>
+<script>
+// Pick a Box — standalone. Needs the "assets" folder next to this file (3 prize PNGs).
+// Settings: change prize names / intro word / autoplay here.
+const SETTINGS = { prize1: 'iPhone 18 Pro', prize2: 'iPhone Duo', prize3: 'AirPods Pro', introWord: 'TRY IT!', autoDemo: false };
+const h = React.createElement;
+const ORDER = ['boot','intro','pick','focus','shake','open','reveal','fly','won','form','confirmed','track'];
+const EASE = 'cubic-bezier(.16,1,.3,1)';
+const blank = () => ({ name: '', email: '', city: '' });
+const NAMES = ['Alex Morgan','Jordan Lee','Taylor Brooks','Sam Rivera','Casey Parker','Riley Quinn','Jamie Ellis','Morgan Blake'];
+const CITIES = ['Los Angeles, CA','Austin, TX','Miami, FL','Seattle, WA','Denver, CO','New York, NY','Chicago, IL'];
+const pick1 = a => a[Math.floor(Math.random() * a.length)];
+class App extends React.Component {
+  render() {
+    const V = this.renderVals();
+    return h("div", {style:{"minHeight":`100dvh`,"display":`flex`,"justifyContent":`center`,"fontFamily":`'Archivo',system-ui,sans-serif`,"color":`#22123F`}},
+      h("div", {"data-screen-label":`Pick a Box`, style:{"position":`relative`,"width":`min(100vw,46.2dvh)`,"height":`100dvh`,"overflow":`hidden`,"containerType":`size`,"background":`radial-gradient(ellipse at 50% 45%,#3A1E73,#1E0F42 70%)`,"userSelect":`none`}},
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`50%`,"width":`260cqh`,"height":`260cqh`,"transform":`translate(-50%,-50%)`,"background":`repeating-conic-gradient(from 0deg,rgba(255,201,60,.16) 0deg 4.5deg,rgba(255,255,255,0) 4.5deg 13deg)`,"animation":`dcSpin 90s linear infinite`,"WebkitMask":`radial-gradient(circle,#000 8%,rgba(0,0,0,.55) 26%,transparent 46%)`,"mask":`radial-gradient(circle,#000 8%,rgba(0,0,0,.55) 26%,transparent 46%)`}}),
+        h("div", {style:{"position":`absolute`,"inset":`0`,"background":`radial-gradient(ellipse 60% 40% at 50% 50%,rgba(255,120,180,.22),rgba(255,120,180,0) 70%),radial-gradient(ellipse 120% 80% at 50% 50%,rgba(0,0,0,0) 55%,rgba(8,2,20,.45))`}}),
+        h("div", {style:{"position":`absolute`,"width":`30cqw`,"height":`30cqw`,"borderRadius":`50%`,"background":`rgba(255,77,141,.12)`,"left":`-8cqw`,"top":`9%`}}),
+        h("div", {style:{"position":`absolute`,"width":`18cqw`,"height":`18cqw`,"borderRadius":`50%`,"background":`rgba(255,77,141,.12)`,"right":`-4cqw`,"top":`30%`}}),
+        h("div", {style:{"position":`absolute`,"width":`42cqw`,"height":`42cqw`,"borderRadius":`50%`,"background":`rgba(255,201,60,.08)`,"right":`-14cqw`,"bottom":`6%`}}),
+        h("div", {style:{"position":`absolute`,"width":`14cqw`,"height":`14cqw`,"borderRadius":`50%`,"background":`rgba(255,77,141,.12)`,"left":`8cqw`,"bottom":`12%`}}),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`52%`,"width":`118cqw`,"height":`118cqw`,"transform":`translate(-50%,-50%)`,"border":`1.5px dashed rgba(255,201,60,.3)`,"borderRadius":`50%`}}),
+        h("div", {style:{"position":`absolute`,"left":`0`,"right":`0`,"top":`20%`,"height":`1px`,"background":`rgba(255,201,60,.15)`}}),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`52%`,"width":`150cqw`,"height":`150cqw`,"transform":`translate(-50%,-50%) scale(${V.burst.s})`,"opacity":V.burst.o,"transition":`opacity 700ms ease,transform 1100ms cubic-bezier(.16,1,.3,1)`,"pointerEvents":`none`}},
+          h("div", {style:{"position":`absolute`,"left":`50%`,"top":`50%`,"width":`100%`,"height":`100%`,"background":`repeating-conic-gradient(from 3deg,rgba(255,222,140,.9) 0deg 7deg,rgba(255,255,255,0) 7deg 18deg)`,"borderRadius":`50%`,"animation":`dcSpin 40s linear infinite`,"WebkitMask":`radial-gradient(circle,#000 10%,transparent 68%)`,"mask":`radial-gradient(circle,#000 10%,transparent 68%)`}}),
+          h("div", {style:{"position":`absolute`,"inset":`22%`,"borderRadius":`50%`,"background":`radial-gradient(circle,#FFF6DA 0%,rgba(255,214,120,.8) 30%,rgba(255,214,120,0) 70%)`,"animation":`dcGlow 2.4s ease-in-out infinite`}})),
+        h("div", {style:{"position":`absolute`,"left":`0`,"right":`0`,"top":`6.5%`,"display":`flex`,"flexDirection":`column`,"alignItems":`center`,"gap":`2.2cqw`,"pointerEvents":`none`}},
+          h("div", {style:{"position":`relative`,"width":`100%`,"height":`13cqw`}},
+            h("div", {style:{"position":`absolute`,"inset":`0`,"display":`flex`,"justifyContent":`center`,"alignItems":`center`,"fontWeight":`900`,"fontSize":`11cqw`,"letterSpacing":`-.02em`,"color":`#FFC93C`,"WebkitTextStroke":`.5cqw #1E0F42`,"paintOrder":`stroke`,"textShadow":`0 .9cqw 0 #FF4D8D`,"opacity":V.t.intro.o,"transform":`translateY(${V.t.intro.y}cqw) scale(${V.t.intro.s})`,"transition":`opacity 500ms ease,transform 700ms cubic-bezier(.16,1,.3,1)`}},
+              V.introWord),
+            h("div", {style:{"position":`absolute`,"inset":`0`,"display":`flex`,"justifyContent":`center`,"alignItems":`center`,"fontWeight":`900`,"fontSize":`10.5cqw`,"letterSpacing":`-.02em`,"color":`#FFC93C`,"opacity":V.t.pick.o,"transform":`translateY(${V.t.pick.y}cqw) scale(${V.t.pick.s})`,"transition":`opacity 500ms ease,transform 700ms cubic-bezier(.16,1,.3,1)`}},
+              V.pickTitle),
+            h("div", {style:{"position":`absolute`,"inset":`0`,"display":`flex`,"justifyContent":`center`,"alignItems":`center`,"fontWeight":`900`,"fontSize":`11.5cqw`,"letterSpacing":`-.02em`,"color":`#fff`,"textShadow":`0 .8cqw 0 #FF4D8D,0 1cqw 4cqw rgba(255,77,141,.5)`,"opacity":V.t.won.o,"transform":`translateY(${V.t.won.y}cqw) scale(${V.t.won.s})`,"transition":`opacity 500ms ease,transform 800ms cubic-bezier(.34,1.56,.64,1)`}},
+              `YOU WON!`),
+            h("div", {style:{"position":`absolute`,"inset":`-2cqw 0 auto`,"display":`flex`,"flexDirection":`column`,"alignItems":`center`,"fontWeight":`900`,"fontSize":`8.4cqw`,"lineHeight":`1`,"letterSpacing":`-.02em`,"opacity":V.t.track.o,"transform":`translateY(${V.t.track.y}cqw)`,"transition":`opacity 500ms ease,transform 800ms cubic-bezier(.16,1,.3,1)`}},
+              h("span", {style:{"color":`#fff`}},
+                `YOUR 3 PRIZES`),
+              h("span", {style:{"color":`#FFC93C`,"WebkitTextStroke":`.35cqw #1E0F42`,"paintOrder":`stroke`}},
+                `ON THE WAY`))),
+          h("div", {style:{"background":`#FF4D8D`,"color":`#fff`,"fontWeight":`700`,"fontSize":`3.3cqw`,"padding":`1.3cqw 5cqw`,"borderRadius":`99px`,"opacity":V.t.sub.o,"transform":`scale(${V.t.sub.s})`,"transition":`opacity 400ms ease,transform 600ms cubic-bezier(.16,1,.3,1)`}},
+            `Pick 3 boxes · win 3 prizes`)),
+        V.boxes.map((b, $index) => h(React.Fragment, {key: $index}, h("div", {"onClick":b.onClick, style:{"position":`absolute`,"left":`${b.x}%`,"top":`${b.y}%`,"width":`31cqw`,"height":`31cqw`,"transform":`translate(-50%,-50%) scale(${b.s})`,"opacity":b.o,"transition":b.tr,"cursor":b.cursor,"zIndex":b.z}},
+            h("div", {style:{"position":`absolute`,"inset":`0`,"animation":b.anim}},
+              h("div", {style:{"position":`absolute`,"left":`14%`,"right":`14%`,"bottom":`-2%`,"height":`12%`,"borderRadius":`50%`,"background":`radial-gradient(ellipse,rgba(5,0,15,.6),rgba(5,0,15,0) 70%)`}}),
+              h("div", {style:{"position":`absolute`,"left":`9%`,"right":`9%`,"top":`36%`,"bottom":`4%`,"borderRadius":`2px 2px 6px 6px`,"background":`linear-gradient(90deg,#C8175E 0 50%,#F23A80 50% 100%)`,"boxShadow":`inset 0 -2.6cqw 4cqw rgba(90,0,40,.3)`}},
+                h("div", {style:{"position":`absolute`,"top":`0`,"bottom":`0`,"left":`43%`,"width":`14%`,"background":`linear-gradient(90deg,#F2B52A,#FFD467)`}}),
+                h("div", {style:{"position":`absolute`,"left":`12%`,"top":`24%`,"fontWeight":`900`,"fontSize":`6cqw`,"color":`rgba(90,0,45,.45)`}},
+                  `?`),
+                h("div", {style:{"position":`absolute`,"right":`12%`,"top":`24%`,"fontWeight":`900`,"fontSize":`6cqw`,"color":`rgba(90,0,45,.45)`}},
+                  `?`)),
+              h("div", {style:{"position":`absolute`,"left":`0`,"right":`0`,"top":`0`,"height":`44%`,"transform":b.lid,"opacity":b.lidO,"transition":`transform 250ms cubic-bezier(.3,1.4,.5,1),opacity 200ms ease`}},
+                h("div", {style:{"position":`absolute`,"left":`4%`,"right":`4%`,"bottom":`0`,"height":`42%`,"borderRadius":`3px`,"background":`linear-gradient(90deg,#E02A72 0 50%,#FF5591 50% 100%)`,"boxShadow":`0 1.2cqw 1.8cqw rgba(90,0,40,.35)`}},
+                  h("div", {style:{"position":`absolute`,"top":`0`,"bottom":`0`,"left":`43%`,"width":`14%`,"background":`#FFD467`}})),
+                h("div", {style:{"position":`absolute`,"left":`18%`,"top":`10%`,"width":`32%`,"height":`46%`,"borderRadius":`50% 50% 40% 50%`,"border":`2.5cqw solid #FFC93C`,"boxSizing":`border-box`,"transform":`rotate(-28deg)`,"boxShadow":`inset 0 -.6cqw 0 rgba(0,0,0,.08)`}}),
+                h("div", {style:{"position":`absolute`,"right":`18%`,"top":`10%`,"width":`32%`,"height":`46%`,"borderRadius":`50% 50% 50% 40%`,"border":`2.5cqw solid #FFC93C`,"boxSizing":`border-box`,"transform":`rotate(28deg)`,"boxShadow":`inset 0 -.6cqw 0 rgba(0,0,0,.08)`}}),
+                h("div", {style:{"position":`absolute`,"left":`41%`,"top":`40%`,"width":`18%`,"height":`20%`,"borderRadius":`40%`,"background":`#FFE08A`}})))))),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`${V.s0.top}%`,"width":`60cqw`,"height":`66cqw`,"transform":V.s0.tf,"opacity":V.s0.o,"transition":V.s0.tr,"filter":`drop-shadow(0 4cqw 5cqw rgba(0,0,0,.35))`,"zIndex":`20`,"pointerEvents":`none`}},
+          h("img", {"src":`assets/pasted-1794231904551-0-cut.png`, "alt":``, style:{"width":`100%`,"height":`100%`,"objectFit":`contain`}})),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`${V.s1.top}%`,"width":`60cqw`,"height":`66cqw`,"transform":V.s1.tf,"opacity":V.s1.o,"transition":V.s1.tr,"filter":`drop-shadow(0 4cqw 5cqw rgba(0,0,0,.35))`,"zIndex":`20`,"pointerEvents":`none`}},
+          h("img", {"src":`assets/pasted-1794231919611-0-cut.png`, "alt":``, style:{"width":`100%`,"height":`100%`,"objectFit":`contain`}})),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`${V.s2.top}%`,"width":`60cqw`,"height":`66cqw`,"transform":V.s2.tf,"opacity":V.s2.o,"transition":V.s2.tr,"filter":`drop-shadow(0 4cqw 5cqw rgba(0,0,0,.35))`,"zIndex":`20`,"pointerEvents":`none`}},
+          h("img", {"src":`assets/pasted-1794232005757-0-cut.png`, "alt":``, style:{"width":`100%`,"height":`100%`,"objectFit":`contain`}})),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`76%`,"transform":`translate(-50%,-50%) translateY(${V.cur.dy}cqw)`,"opacity":V.cur.o,"transition":`opacity 500ms ease 150ms,transform 700ms cubic-bezier(.16,1,.3,1) 150ms`,"background":`#fff`,"color":`#22123F`,"fontWeight":`800`,"fontSize":`4.2cqw`,"padding":`2cqw 7cqw`,"borderRadius":`99px`,"whiteSpace":`nowrap`,"boxShadow":`0 1cqw 3cqw rgba(0,0,0,.25)`,"zIndex":`21`,"pointerEvents":`none`}},
+          V.cur.name),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`${V.bk.y}%`,"transform":`translate(-50%,-50%) scale(${V.bk.s})`,"opacity":V.bk.o,"transition":`top 900ms cubic-bezier(.16,1,.3,1),transform 900ms cubic-bezier(.16,1,.3,1),opacity 500ms ease`,"zIndex":`19`,"pointerEvents":`none`}},
+          h("div", {style:{"position":`relative`,"width":`28cqw`,"height":`22cqw`,"transform":`scale(${V.bk.bump})`,"transition":`transform 220ms cubic-bezier(.34,1.8,.64,1)`}},
+            h("div", {style:{"position":`absolute`,"left":`-9%`,"top":`-14%`,"width":`24%`,"height":`1.1cqw`,"borderRadius":`99px`,"background":`#fff`,"transform":`rotate(-24deg)`,"transformOrigin":`right center`}}),
+            h("div", {style:{"position":`absolute`,"left":`-12%`,"top":`-26%`,"width":`1.1cqw`,"height":`14%`,"borderRadius":`99px`,"background":`#fff`}}),
+            h("div", {style:{"position":`absolute`,"left":`4%`,"right":`2%`,"top":`6%`,"bottom":`22%`,"clipPath":`polygon(0 0,100% 0,86% 100%,14% 100%)`,"background":`repeating-linear-gradient(0deg,#e8ecf3 0 .55cqw,rgba(255,255,255,.1) .55cqw 3.4cqw),repeating-linear-gradient(90deg,#e8ecf3 0 .55cqw,rgba(255,255,255,.1) .55cqw 3.6cqw)`,"backgroundColor":`rgba(255,255,255,.22)`}}),
+            h("img", {"src":`assets/pasted-1794231904551-0-cut.png`, "alt":``, style:{"position":`absolute`,"left":`8%`,"top":`-20%`,"width":`36%`,"height":`60%`,"objectFit":`contain`,"transform":`rotate(-14deg) translateY(${V.c0.y}cqw) scale(${V.c0.s})`,"opacity":V.c0.o,"transition":`transform 350ms cubic-bezier(.34,1.56,.64,1),opacity 200ms ease`,"filter":`drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))`}}),
+            h("img", {"src":`assets/pasted-1794231919611-0-cut.png`, "alt":``, style:{"position":`absolute`,"left":`34%`,"top":`-26%`,"width":`36%`,"height":`60%`,"objectFit":`contain`,"transform":`rotate(6deg) translateY(${V.c1.y}cqw) scale(${V.c1.s})`,"opacity":V.c1.o,"transition":`transform 350ms cubic-bezier(.34,1.56,.64,1),opacity 200ms ease`,"filter":`drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))`}}),
+            h("img", {"src":`assets/pasted-1794232005757-0-cut.png`, "alt":``, style:{"position":`absolute`,"left":`58%`,"top":`-14%`,"width":`36%`,"height":`60%`,"objectFit":`contain`,"transform":`rotate(16deg) translateY(${V.c2.y}cqw) scale(${V.c2.s})`,"opacity":V.c2.o,"transition":`transform 350ms cubic-bezier(.34,1.56,.64,1),opacity 200ms ease`,"filter":`drop-shadow(0 .6cqw .8cqw rgba(0,0,0,.35))`}}),
+            h("div", {style:{"position":`absolute`,"left":`3%`,"right":`1%`,"top":`4%`,"height":`1.3cqw`,"borderRadius":`99px`,"background":`#fff`}}),
+            h("div", {style:{"position":`absolute`,"left":`16%`,"right":`12%`,"bottom":`18%`,"height":`1cqw`,"borderRadius":`99px`,"background":`#e8ecf3`}}),
+            h("div", {style:{"position":`absolute`,"left":`20%`,"bottom":`0`,"width":`5cqw`,"height":`5cqw`,"borderRadius":`50%`,"background":`#22123F`,"border":`1cqw solid #E0306F`,"boxSizing":`border-box`}}),
+            h("div", {style:{"position":`absolute`,"right":`16%`,"bottom":`0`,"width":`5cqw`,"height":`5cqw`,"borderRadius":`50%`,"background":`#22123F`,"border":`1cqw solid #E0306F`,"boxSizing":`border-box`}}),
+            h("div", {style:{"position":`absolute`,"right":`-3cqw`,"top":`-2cqw`,"minWidth":`8.4cqw`,"height":`8.4cqw`,"padding":`0 1.4cqw`,"boxSizing":`border-box`,"borderRadius":`99px`,"background":`#E0306F`,"color":`#fff`,"fontWeight":`900`,"fontSize":`4cqw`,"display":`flex`,"alignItems":`center`,"justifyContent":`center`,"border":`.7cqw solid #1E0F42`,"zIndex":`3`}},
+              `${V.got}/3`))),
+        h("div", {style:{"position":`absolute`,"left":`50%`,"top":`60%`,"transform":`translateX(-50%)`,"display":`flex`,"flexDirection":`column`,"gap":`2.2cqw`,"alignItems":`center`,"opacity":V.won.o,"transition":`opacity 500ms ease .3s`,"zIndex":`21`,"pointerEvents":`none`}},
+          V.names.map((n, $index) => h(React.Fragment, {key: $index}, h("div", {style:{"background":`#fff`,"color":`#22123F`,"fontWeight":`800`,"fontSize":`4cqw`,"padding":`1.6cqw 6cqw`,"borderRadius":`99px`,"whiteSpace":`nowrap`,"boxShadow":`0 1cqw 3cqw rgba(0,0,0,.25)`,"display":`flex`,"gap":`2.4cqw`,"alignItems":`center`}},
+              h("span", {style:{"color":`#E0306F`}},
+                n.i),
+              n.name)))),
+        h("div", {"onClick":V.claim, style:{"position":`absolute`,"left":`50%`,"top":`87%`,"opacity":V.won.o2,"transition":`opacity 500ms ease 450ms`,"zIndex":`21`,"pointerEvents":V.won.pe}},
+          h("div", {style:{"position":`absolute`,"left":`0`,"top":`0`,"transform":`translate(-50%,-50%)`,"background":`#E0306F`,"color":`#fff`,"fontWeight":`900`,"fontSize":`4.8cqw`,"letterSpacing":`.02em`,"padding":`3.6cqw 11cqw`,"borderRadius":`99px`,"whiteSpace":`nowrap`,"cursor":`pointer`,"animation":`dcPulse 1.6s ease-in-out infinite`}},
+            `CLAIM NOW`)),
+        h("div", {style:{"position":`absolute`,"inset":`0`,"background":`rgba(30,32,40,.22)`,"backdropFilter":`blur(3px)`,"WebkitBackdropFilter":`blur(3px)`,"opacity":V.dim,"transition":`opacity 500ms ease`,"pointerEvents":`none`,"zIndex":`30`}}),
+        h("div", {style:{"position":`absolute`,"left":`4cqw`,"right":`4cqw`,"top":`21%`,"bottom":`5%`,"background":`#fff`,"borderRadius":`6cqw`,"boxShadow":`0 3cqw 8cqw rgba(34,18,63,.22)`,"transform":`translateY(${V.sheetY}%)`,"transition":`transform 450ms cubic-bezier(.16,1,.3,1)`,"zIndex":`31`,"display":`flex`,"flexDirection":`column`,"padding":`2.6cqw 5.5cqw 5.5cqw`,"boxSizing":`border-box`}},
+          h("div", {style:{"alignSelf":`center`,"width":`11cqw`,"height":`1.1cqw`,"borderRadius":`99px`,"background":`#dfe2e8`,"marginBottom":`4cqw`}}),
+          h("div", {style:{"display":`flex`,"flexDirection":`column`,"gap":`1.8cqw`}},
+            h("span", {style:{"fontSize":`3cqw`,"color":`#6b7590`,"fontWeight":`500`}},
+              `Your prizes · reserved`),
+            h("div", {style:{"display":`flex`,"flexWrap":`wrap`,"gap":`1.6cqw`}},
+              h("div", {style:{"width":`15cqw`,"height":`15cqw`,"borderRadius":`3.4cqw`,"background":`#FFF0F5`,"display":`flex`,"alignItems":`center`,"justifyContent":`center`}},
+                h("img", {"src":`assets/pasted-1794231904551-0-cut.png`, "alt":``, style:{"width":`80%`,"height":`80%`,"objectFit":`contain`}})),
+              h("div", {style:{"width":`15cqw`,"height":`15cqw`,"borderRadius":`3.4cqw`,"background":`#FFF0F5`,"display":`flex`,"alignItems":`center`,"justifyContent":`center`}},
+                h("img", {"src":`assets/pasted-1794231919611-0-cut.png`, "alt":``, style:{"width":`80%`,"height":`80%`,"objectFit":`contain`}})),
+              h("div", {style:{"width":`15cqw`,"height":`15cqw`,"borderRadius":`3.4cqw`,"background":`#FFF0F5`,"display":`flex`,"alignItems":`center`,"justifyContent":`center`}},
+                h("img", {"src":`assets/pasted-1794232005757-0-cut.png`, "alt":``, style:{"width":`80%`,"height":`80%`,"objectFit":`contain`}})))),
+          h("div", {style:{"fontSize":`5.4cqw`,"fontWeight":`800`,"textAlign":`center`,"margin":`5.5cqw 0 4cqw`,"letterSpacing":`-.01em`}},
+            `Where should we send it?`),
+          h("div", {style:{"display":`flex`,"flexDirection":`column`,"gap":`3cqw`,"flex":`1`}},
+            V.fields.map((f, $index) => h(React.Fragment, {key: $index}, h("label", {style:{"display":`flex`,"flexDirection":`column`,"gap":`1.2cqw`}},
+                h("span", {style:{"fontSize":`3.1cqw`,"fontWeight":`600`,"color":`#4a5470`}},
+                  f.label),
+                h("div", {style:{"position":`relative`}},
+                  h("input", {"value":f.value, "onChange":f.onChange, "placeholder":f.ph, "type":f.type, style:{"width":`100%`,"boxSizing":`border-box`,"fontSize":`4cqw`,"padding":`3cqw 22cqw 3cqw 3.4cqw`,"borderRadius":`2.6cqw`,"border":`1.5px solid ${f.border}`,"background":`#f3f5f8`,"color":`#22123F`,"outline":`none`,"transition":`border-color 200ms,background 200ms`}, className:"x1"}),
+                  h("div", {"onClick":V.paste, style:{"position":`absolute`,"right":`1.8cqw`,"top":`50%`,"transform":`translateY(-50%)`,"display":`flex`,"alignItems":`center`,"gap":`1.2cqw`,"background":`#FFE6EF`,"color":`#E0306F`,"fontWeight":`800`,"fontSize":`3.2cqw`,"padding":`1.6cqw 3cqw`,"borderRadius":`99px`,"cursor":`pointer`}, className:"x2"},
+                    h("span", {style:{"width":`2.6cqw`,"height":`3.2cqw`,"border":`.5cqw solid currentColor`,"borderRadius":`.6cqw`,"boxSizing":`border-box`}}),
+                    `Paste`)),
+                h("span", {style:{"fontSize":`2.8cqw`,"color":`#e0364b`,"minHeight":`3cqw`}},
+                  f.err))))),
+          h("div", {"onClick":V.confirm, style:{"display":`flex`,"justifyContent":`center`,"alignItems":`center`,"gap":`2cqw`,"height":`13cqw`,"borderRadius":`3.4cqw`,"background":V.btn.bg,"color":`#fff`,"fontWeight":`900`,"fontSize":`4.4cqw`,"letterSpacing":`.04em`,"cursor":`pointer`,"transform":`scale(${V.btn.s})`,"transition":`background 400ms ease,transform 300ms cubic-bezier(.34,1.56,.64,1)`,"boxShadow":`0 2cqw 4cqw ${V.btn.sh}`}},
+            V.btn.label)),
+        h("div", {style:{"position":`absolute`,"left":`4cqw`,"right":`4cqw`,"top":`21%`,"background":`#fff`,"borderRadius":`6cqw`,"boxShadow":`0 3cqw 8cqw rgba(34,18,63,.2)`,"overflow":`hidden`,"transform":`translateY(${V.tr.y}cqh)`,"opacity":V.tr.o,"pointerEvents":V.tr.pe,"transition":`transform 900ms cubic-bezier(.16,1,.3,1),opacity 500ms ease`,"zIndex":`32`,"display":`flex`,"flexDirection":`column`}},
+          h("div", {style:{"position":`relative`,"height":`52cqw`,"background":`#e9efe4`}},
+            h("svg", {"viewBox":`0 0 300 170`, "preserveAspectRatio":`xMidYMid slice`, style:{"position":`absolute`,"inset":`0`,"width":`100%`,"height":`100%`}},
+              h("rect", {"x":`0`, "y":`0`, "width":`300`, "height":`170`, "fill":`#e9efe4`}),
+              h("rect", {"x":`128`, "y":`10`, "width":`40`, "height":`18`, "rx":`3`, "fill":`#cfe6c6`}),
+              h("rect", {"x":`20`, "y":`20`, "width":`60`, "height":`45`, "rx":`4`, "fill":`#dfe8da`}),
+              h("ellipse", {"cx":`262`, "cy":`34`, "rx":`34`, "ry":`22`, "fill":`#a9cdf2`}),
+              h("g", {"stroke":`#fff`, "strokeWidth":`9`, "fill":`none`, "strokeLinecap":`round`},
+                h("path", {"d":`M0 100 H300`}),
+                h("path", {"d":`M0 140 H300`}),
+                h("path", {"d":`M110 0 V170`}),
+                h("path", {"d":`M200 0 V170`}),
+                h("path", {"d":`M0 50 H230`}),
+                h("path", {"d":`M40 50 V170`})),
+              h("path", {"ref":V.pathRef, "d":`M40 140 L40 100 L110 100 L110 50 L200 50 L200 70 L255 70 L255 60`, "stroke":`#FF7FAE`, "strokeWidth":`5`, "fill":`none`, "strokeLinejoin":`round`, "strokeLinecap":`round`, "opacity":`.9`}),
+              h("circle", {"cx":`255`, "cy":`60`, "r":`9`, "fill":`#19B25A`, "opacity":`.2`}),
+              h("circle", {"cx":`255`, "cy":`60`, "r":`5`, "fill":`#19B25A`, "stroke":`#fff`, "strokeWidth":`2`}),
+              h("g", {"transform":`translate(${V.truck.x} ${V.truck.y})`},
+                h("rect", {"x":`-11`, "y":`-7`, "width":`15`, "height":`12`, "rx":`2`, "fill":`#E0306F`}),
+                h("rect", {"x":`4`, "y":`-3`, "width":`7`, "height":`8`, "rx":`1.5`, "fill":`#A81C50`}),
+                h("circle", {"cx":`-6`, "cy":`6`, "r":`2.6`, "fill":`#22123F`}),
+                h("circle", {"cx":`6`, "cy":`6`, "r":`2.6`, "fill":`#22123F`})))),
+          h("div", {style:{"display":`flex`,"alignItems":`center`,"gap":`3cqw`,"padding":`5cqw 5cqw 3cqw`}},
+            h("div", {style:{"display":`flex`,"flexDirection":`column`,"gap":`2.8cqw`,"flex":`1`}},
+              V.steps.map((st, $index) => h(React.Fragment, {key: $index}, h("div", {style:{"display":`flex`,"alignItems":`center`,"gap":`2.4cqw`,"fontSize":`3.6cqw`,"fontWeight":st.w,"color":st.c,"transition":`color 400ms`}},
+                  h("div", {style:{"width":`4.4cqw`,"height":`4.4cqw`,"borderRadius":`50%`,"background":st.bg,"color":`#fff`,"display":`flex`,"alignItems":`center`,"justifyContent":`center`,"fontSize":`2.8cqw`,"fontWeight":`900`,"transform":`scale(${st.s})`,"transition":`background 400ms ease,transform 500ms cubic-bezier(.34,1.56,.64,1)`}},
+                    st.mark),
+                  h("span", {},
+                    st.label))))),
+            h("div", {style:{"flex":`none`,"width":`14cqw`,"height":`14cqw`,"borderRadius":`3cqw`,"background":`#FFE6EF`,"color":`#E0306F`,"display":`flex`,"flexDirection":`column`,"alignItems":`center`,"justifyContent":`center`,"fontWeight":`900`,"fontSize":`6cqw`,"lineHeight":`1`}},
+              `3`,
+              h("span", {style:{"fontSize":`2.6cqw`,"fontWeight":`800`,"letterSpacing":`.06em`}},
+                `ITEMS`))),
+          h("div", {style:{"margin":`2cqw 4cqw 4cqw`,"background":`#FFF0F5`,"borderRadius":`3.4cqw`,"padding":`3.4cqw 4.4cqw`,"display":`flex`,"alignItems":`center`,"justifyContent":`space-between`}},
+            h("span", {style:{"fontSize":`3.4cqw`,"fontWeight":`600`,"color":`#4a5470`}},
+              `Arrives in`),
+            h("span", {style:{"fontSize":`8cqw`,"fontWeight":`900`,"color":`#E0306F`,"fontVariantNumeric":`tabular-nums`,"letterSpacing":`-.01em`}},
+              V.countdown)),
+          h("div", {"onClick":V.replay, style:{"alignSelf":`center`,"margin":`0 0 4cqw`,"fontSize":`3.2cqw`,"fontWeight":`600`,"color":`#6b7590`,"cursor":`pointer`,"padding":`1.4cqw 3cqw`,"borderRadius":`99px`}, className:"x3"},
+            `Play again`)),
+        h("canvas", {"ref":V.confRef, style:{"position":`absolute`,"inset":`0`,"width":`100%`,"height":`100%`,"zIndex":`45`,"pointerEvents":`none`}}),
+        h("div", {style:{"position":`absolute`,"left":`0`,"right":`0`,"bottom":`2%`,"textAlign":`center`,"fontWeight":`800`,"fontSize":`2.8cqw`,"letterSpacing":`.06em`,"color":`rgba(255,255,255,.55)`,"zIndex":`40`,"pointerEvents":`none`}},
+          `FOR ILLUSTRATION PURPOSES ONLY`)));
+  }
+
+  state = { phase: 'boot', chosen: -1, taken: [], got: 0, bump: false, form: blank(), errors: blank(), step: 1, secs: 10799, truck: { x: 40, y: 140 } };
+  pathRef = React.createRef();
+  confRef = React.createRef();
+  timers = [];
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; clearInterval(this.tick); cancelAnimationFrame(this.raf); cancelAnimationFrame(this.craf); const c = this.confRef.current; if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height); }
+  confetti() {
+    const c = this.confRef.current; if (!c) return;
+    const dpr = window.devicePixelRatio || 1, W = c.clientWidth, H = c.clientHeight;
+    c.width = W * dpr; c.height = H * dpr;
+    const ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cols = ['#FFC93C', '#E0306F', '#FF7FAE', '#ffffff', '#7B3FF2', '#19B25A'];
+    const ps = [];
+    for (let i = 0; i < 180; i++) { const left = i % 2 === 0; ps.push({ x: left ? -10 : W + 10, y: H * 0.75, vx: (left ? 1 : -1) * (4 + Math.random() * 7), vy: -(9 + Math.random() * 9), w: 5 + Math.random() * 6, h: 8 + Math.random() * 8, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], d: Math.random() * 400 }); }
+    const t0 = performance.now();
+    const step = now => {
+      const t = now - t0; ctx.clearRect(0, 0, W, H); let alive = false;
+      for (const p of ps) {
+        if (t < p.d) { alive = true; continue; }
+        p.vy += 0.32; p.vx *= 0.985; p.vy *= 0.985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        if (p.y < H + 20) alive = true;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.scale(1, Math.cos(p.r * 2)); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+      }
+      if (alive) this.craf = requestAnimationFrame(step); else ctx.clearRect(0, 0, W, H);
+    };
+    this.craf = requestAnimationFrame(step);
+  }
+  componentDidMount() { this.start(); }
+  componentWillUnmount() { this.clear(); }
+  at(p) { return ORDER.indexOf(this.state.phase) >= ORDER.indexOf(p); }
+  go(phase) { this.setState({ phase }); }
+  start() {
+    this.clear();
+    this.setState({ phase: 'boot', chosen: -1, taken: [], got: 0, bump: false, form: blank(), errors: blank(), step: 1, secs: 10799, truck: { x: 40, y: 140 } });
+    this.later(() => this.go('intro'), 60);
+    this.later(() => this.go('pick'), 1700);
+    if (this.props.autoDemo) this.later(() => this.pick(1), 3000);
+  }
+  pick(i) {
+    const s = this.state;
+    if (s.phase !== 'pick' || s.taken.includes(i)) return;
+    this.setState({ chosen: i, phase: 'focus' });
+    this.later(() => this.go('shake'), 350);
+    this.later(() => this.go('open'), 650);
+    this.later(() => this.go('reveal'), 850);
+    this.later(() => this.go('fly'), 1650);
+    this.later(() => this.setState(st => ({ got: st.got + 1, taken: [...st.taken, i], bump: true })), 1950);
+    this.later(() => this.setState({ bump: false }), 2150);
+    this.later(() => {
+      const done = this.state.got >= 3;
+      this.go(done ? 'won' : 'pick');
+      if (this.props.autoDemo) {
+        if (done) this.later(() => this.claim(), 2200);
+        else { const next = [1, 4, 2].find(n => !this.state.taken.includes(n)); this.later(() => this.pick(next), 500); }
+      }
+    }, 2250);
+  }
+  claim() {
+    if (this.state.phase !== 'won') return;
+    this.go('form');
+    if (this.props.autoDemo) { this.later(() => this.paste(), 700); this.later(() => this.confirm(), 1500); }
+  }
+  paste() {
+    const name = pick1(NAMES);
+    const [a, b] = name.toLowerCase().split(' ');
+    const v = { name, email: a + '.' + b + Math.floor(10 + Math.random() * 89) + '@gmail.com', city: pick1(CITIES) };
+    this.setState({ errors: blank() });
+    ['name', 'email', 'city'].forEach((k, n) => this.later(() => this.setState(st => ({ form: { ...st.form, [k]: v[k] } })), n * 50));
+  }
+  validate(f) {
+    const e = blank();
+    if (f.name.trim().length < 2) e.name = 'Enter your full name';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = 'Enter a valid email';
+    if (f.city.trim().length < 2) e.city = 'Enter your city';
+    return e;
+  }
+  confirm() {
+    if (this.state.phase !== 'form') return;
+    const errors = this.validate(this.state.form);
+    this.setState({ errors });
+    if (Object.values(errors).some(Boolean)) return;
+    this.go('confirmed');
+    this.confetti();
+    this.later(() => this.enterTrack(), 450);
+  }
+  enterTrack() {
+    this.go('track');
+    this.later(() => this.setState({ step: 2 }), 700);
+    this.tick = setInterval(() => this.setState(s => ({ secs: Math.max(0, s.secs - 7) })), 100);
+    const t0 = performance.now();
+    const loop = now => {
+      const p = this.pathRef.current;
+      if (p) {
+        const L = p.getTotalLength();
+        const k = Math.min(1, (now - t0) / 6000);
+        const e = 1 - Math.pow(1 - k, 2);
+        const pt = p.getPointAtLength(L * (0.02 + 0.6 * e));
+        this.setState({ truck: { x: pt.x.toFixed(2), y: pt.y.toFixed(2) } });
+      }
+      this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  }
+  field(k) { return e => { const v = e.target.value; this.setState(s => ({ form: { ...s.form, [k]: v }, errors: { ...s.errors, [k]: '' } })); }; }
+  renderVals() {
+    const { phase, chosen, taken, got, bump, form, errors, step, secs, truck } = this.state;
+    const P = p => this.at(p);
+    const is = (...ps) => ps.includes(phase);
+    const active = P('focus') && !P('won');
+    const names = [this.props.prize1 ?? 'iPhone 18 Pro', this.props.prize2 ?? 'iPhone Duo', this.props.prize3 ?? 'AirPods Pro'];
+    const boxes = Array.from({ length: 6 }, (_, i) => {
+      let x = [29, 71][i % 2], y = [35, 53, 71][Math.floor(i / 2)], s = 1, o = 1, z = 1, delay = 0;
+      const me = i === chosen, gone = taken.includes(i);
+      if (phase === 'boot') { s = 0.6; o = 0; }
+      else if (phase === 'intro') delay = i * 60;
+      if (gone || P('won')) { s = 0.6; o = 0; }
+      if (active) {
+        if (me) { x = 50; y = 57; s = 1.55; z = 5; o = 1; }
+        else { s = 0.6; o = 0; delay = 0; }
+      }
+      if (me && P('reveal') && active) { y = 72; s = 1.3; o = 0; }
+      const tr = `transform 500ms ${EASE} ${delay}ms, left 500ms ${EASE}, top 500ms ${EASE}, opacity 300ms ease ${delay}ms`;
+      const anim = is('intro', 'pick') ? `dcBob 2.6s ease-in-out ${(i % 2) * 0.22 + Math.floor(i / 2) * 0.15}s infinite` : (me && phase === 'shake' ? 'dcShake .3s ease-in-out' : 'none');
+      const open = me && P('open') && active;
+      return { x, y, s, o, z, tr, anim, lid: open ? 'translate(-18%,-150%) rotate(-32deg)' : 'none', lidO: open ? 0 : 1, cursor: phase === 'pick' && !gone ? 'pointer' : 'default', onClick: () => this.pick(i) };
+    });
+    const slots = names.map((name, k) => {
+      const mine = k === got;
+      let top = 47, tf = 'translate(-50%,-50%) translateY(14cqw) scale(.3)', o = 0, pe = 'none';
+      let tr = `transform 450ms ${EASE}, top 450ms ${EASE}, opacity 250ms ease`;
+      if (mine && phase === 'reveal') { top = 50; tf = 'translate(-50%,-50%) scale(1)'; o = 1; pe = 'auto'; }
+      if (mine && phase === 'fly') { top = 90; tf = 'translate(-50%,-50%) scale(.14)'; o = 1; tr = 'top 300ms cubic-bezier(.5,0,.8,.4), transform 300ms cubic-bezier(.5,0,.8,.4), opacity 300ms ease-in'; }
+      return { src: ['assets/pasted-1794231904551-0-cut.png','assets/pasted-1794231919611-0-cut.png','assets/pasted-1794232005757-0-cut.png'][k], id: 'prize-' + (k + 1), ph: 'Drop ' + name + ' render', top, tf, o, tr, pe };
+    });
+    const inC = k => (k < got ? { o: 1, y: 0, s: 1 } : { o: 0, y: -4, s: .6 });
+    const T = (on, from = 4) => ({ o: on ? 1 : 0, y: on ? 0 : from, s: on ? 1 : 0.9 });
+    const won = phase === 'won';
+    const bkY = P('form') ? 120 : won ? 38 : 90;
+    const fields = [['name', 'Full name', 'Alex Morgan', 'text'], ['email', 'Email', 'you@email.com', 'email'], ['city', 'City', 'Los Angeles, CA', 'text']].map(([k, label, ph, type]) => ({ label, ph, type, value: form[k], onChange: this.field(k), err: errors[k], border: errors[k] ? '#e0364b' : 'transparent' }));
+    const steps = ['Prizes confirmed', 'Packed & sealed', 'Out for delivery'].map((label, i) => {
+      const ok = i < step;
+      return { label, mark: ok ? '✓' : '', bg: ok ? '#19B25A' : '#dfe3ea', c: ok ? '#22123F' : '#8a93a8', w: ok ? 700 : 500, s: ok ? 1 : 0.85 };
+    });
+    const pad = n => String(n).padStart(2, '0');
+    const done = phase === 'confirmed';
+    return {
+      pickTitle: 'PICK BOX ' + Math.min(3, got + 1) + '/3',
+      introWord: this.props.introWord ?? 'TRY IT!',
+      boxes, s0: slots[0], s1: slots[1], s2: slots[2], c0: inC(0), c1: inC(1), c2: inC(2), got, names: names.map((name, i) => ({ name, i: i + 1, src: ['assets/pasted-1794231904551-0-cut.png','assets/pasted-1794231919611-0-cut.png','assets/pasted-1794232005757-0-cut.png'][i] })), fields,
+      cur: { name: names[Math.min(got, 2)], o: phase === 'reveal' ? 1 : 0, dy: phase === 'reveal' ? 0 : 4 },
+      bk: { y: bkY, s: won ? 1.8 : 1, o: P('form') ? 0 : (P('focus') || won || is('pick') ? 1 : 0), bump: bump ? 1.2 : 1 },
+      t: { intro: T(phase === 'intro', -4), pick: T(P('pick') && !P('won')), won: T(won), track: T(P('track')), sub: T(is('intro', 'pick')) },
+      burst: { o: P('open') && !P('form') ? (won ? 0.5 : (phase === 'fly' ? 0.4 : 1)) : 0, s: P('open') ? 1 : 0.4 },
+      won: { o: won ? 1 : 0, o2: won ? 1 : 0, pe: won ? 'auto' : 'none' },
+      claim: () => this.claim(), paste: () => this.paste(),
+      dim: is('form', 'confirmed') ? 1 : 0,
+      sheetY: is('form', 'confirmed') ? 0 : 120,
+      btn: done ? { bg: '#19B25A', label: 'CONFIRMED ✓', s: 1.02, sh: 'rgba(25,178,90,.35)' } : { bg: '#E0306F', label: 'CONFIRM', s: 1, sh: 'rgba(224,48,111,.3)' },
+      confirm: () => this.confirm(), confRef: this.confRef,
+      tr: { y: P('track') ? 0 : 60, o: P('track') ? 1 : 0, pe: P('track') ? 'auto' : 'none' },
+      truck, steps,
+      countdown: `${pad(Math.floor(secs / 3600))}:${pad(Math.floor(secs / 60) % 60)}:${pad(secs % 60)}`,
+      pathRef: this.pathRef,
+      replay: () => this.start(),
+    };
+  }
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(App, SETTINGS));
+</script>
+</body>
+</html>
